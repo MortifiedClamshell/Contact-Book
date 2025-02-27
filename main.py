@@ -1,26 +1,51 @@
 import csv
 
-# Creates a contact book if contact book doesn't exist
-try:
-    f = open("Contact_Book.csv", "x")
-    f.close()
-except FileExistsError:
-    print("File already exists")
+# Asks if the user wants to open an existing contact book or create a new one
+contact_option = ""
+book = ""
+while contact_option != "1" and contact_option != "2":
+    print("Welcome to Your Contact Books \n1. Open existing contact book \n2. Create new contact book")
+    contact_option = input(">> ")
+    
+    # Open existing contact book
+    if contact_option == "1":
+        try:
+            book = input("Enter the name of the contact book >> ")
+            f = open(book + ".csv", "r")
+            f.close()   
+        except FileNotFoundError:
+            print("File doesn't exist")
+            contact_option = ""
+    
+    # Create new contact book
+    elif contact_option == "2":
+        try:
+            book = input("Enter the name of the contact book >> ")
+            f = open(book + ".csv", "x")
+            f.write("Name, Number\n")
+            f.close()
+        except FileExistsError:
+            print("File already exists")
+            contact_option = ""
+    
+    # Handle invalid options
+    else:
+        print("Invalid option")
 
-# Gives the user options to view, edit, append, delete, or exit the contact book
+# Gives the user options to view, edit, append, delete, override, or exit the contact book
 option = ""
-while option != "5":
-    print("select an option:\n1. View Contacts\n2. Add Contact\n3. Edit Contact\n4. Delete Contact\n5. Exit")
+while option != "7" or option != "6":
+    print("select an option:\n1. View Contacts\n2. Add Contact\n3. Edit Contact\n4. Delete Contact\n5. Override Contact Book\n6. Switch Contact Book\n7. Exit")
     option = input(">> ") 
 
     # View contacts
     if option == "1":
-        with open("Contact_Book.csv", "r") as f:
+        with open(book + ".csv", "r") as f:
             print(f.read())
 
     # Add a new contact
     elif option == "2":
-        with open("Contact_Book.csv", "a") as f:
+        with open(book + ".csv", "a") as f:
             f.write(input("Name \n>> "))
             f.write(", ")
             f.write(input("Number \n>> "))
@@ -28,7 +53,7 @@ while option != "5":
 
     # Edit an existing contact
     elif option == "3":
-        with open("Contact_Book.csv", "r") as f:
+        with open(book + ".csv", "r") as f:
             reader = list(csv.reader(f))
             for i, row in enumerate(reader):
                 print(f"{i}: {row[0]}, {row[1]}")
@@ -40,7 +65,7 @@ while option != "5":
                 reader[index][0] = name
             if number:
                 reader[index][1] = number
-            with open("Contact_Book.csv", "w", newline='') as f:
+            with open(book + ".csv", "w", newline='') as f:
                 writer = csv.writer(f)
                 writer.writerows(reader)
         else:
@@ -48,21 +73,33 @@ while option != "5":
 
     # Delete an existing contact
     elif option == "4":
-        with open("Contact_Book.csv", "r") as f:
+        with open(book + ".csv", "r") as f:
             reader = list(csv.reader(f))
             for i, row in enumerate(reader):
                 print(f"{i}: {row[0]}, {row[1]}")
         index = int(input("Enter the number of the contact you want to delete: "))
         if 0 <= index < len(reader):
             del reader[index]
-            with open("Contact_Book.csv", "w", newline='') as f:
+            with open(book + ".csv", "w", newline='') as f:
                 writer = csv.writer(f)
                 writer.writerows(reader)
         else:
             print("Invalid index")
 
-    # Exit the program
+    # Override the contact book
     elif option == "5":
+        with open(book + ".csv", "w") as f:
+            f.write("Name, Number\n")
+            print("Contact book has been overridden")
+
+    # Switch contact book
+    elif option == "6":
+        f.close()
+        contact_option = ""
+
+    # Exit the program
+    elif option == "7":
+        f.close()
         print("Goodbye")
 
     # Handle invalid options
