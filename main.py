@@ -1,10 +1,11 @@
 import csv
+import os
 
 # Asks if the user wants to open an existing contact book or create a new one
 contact_option = ""
 book = ""
-while contact_option != "1" and contact_option != "2":
-    print("Welcome to Your Contact Books \n1. Open existing contact book \n2. Create new contact book")
+while contact_option != "1" and contact_option != "2" and contact_option != "3" and contact_option != "4":
+    print("Welcome to Your Contact Books \n1. Open existing contact book \n2. Create new contact book \n3. View all contact books \n4. Delete contact book")
     contact_option = input(">> ")
     
     # Open existing contact book
@@ -28,13 +29,26 @@ while contact_option != "1" and contact_option != "2":
             print("File already exists")
             contact_option = ""
     
+    # View all contact books
+    elif contact_option == "3":
+        for file in os.listdir():
+            if file.endswith(".csv"):
+                print(file)
+        contact_option = ""
+    
+    # Delete contact book
+    elif contact_option == "4":
+        book = input("Enter the name of the contact book >> ")
+        os.remove(book + ".csv")
+        contact_option = ""
+
     # Handle invalid options
     else:
         print("Invalid option")
 
-# Gives the user options to view, edit, append, delete, override, or exit the contact book
+# Gives the user options to view, edit, append, delete, override, switch, or exit the contact book
 option = ""
-while option != "7" or option != "6":
+while option != "7":
     print("select an option:\n1. View Contacts\n2. Add Contact\n3. Edit Contact\n4. Delete Contact\n5. Override Contact Book\n6. Switch Contact Book\n7. Exit")
     option = input(">> ") 
 
@@ -94,12 +108,32 @@ while option != "7" or option != "6":
 
     # Switch contact book
     elif option == "6":
-        f.close()
         contact_option = ""
+        while contact_option != "1" and contact_option != "2":
+            print("1. Open existing contact book \n2. Create new contact book")
+            contact_option = input(">> ")
+            if contact_option == "1":
+                try:
+                    book = input("Enter the name of the contact book >> ")
+                    f = open(book + ".csv", "r")
+                    f.close()   
+                except FileNotFoundError:
+                    print("File doesn't exist")
+                    contact_option = ""
+            elif contact_option == "2":
+                try:
+                    book = input("Enter the name of the contact book >> ")
+                    f = open(book + ".csv", "x")
+                    f.write("Name, Number\n")
+                    f.close()
+                except FileExistsError:
+                    print("File already exists")
+                    contact_option = ""
+            else:
+                print("Invalid option")
 
     # Exit the program
     elif option == "7":
-        f.close()
         print("Goodbye")
 
     # Handle invalid options
